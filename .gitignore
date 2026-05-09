@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+.next/
+.turbo/
+out/
+dist/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Env / Secrets
+.env
+.env.local
+.env.production
+.env.*.local
+*.key
+*.pem
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Docker / runtime
+docker-compose.override.yml
+volumes/
+*.sqlite
+*.sqlite3
+
+# Build artifacts
+build/
+*.tsbuildinfo
+coverage/
+.coverage
+htmlcov/
+
+# Tmp / local
+tmp/plans/
+tmp/cache/
+*.tmp
+.scratchpad/
+
+# Claude Code local
+.claude/local/
+.claude/cache/
+
+# OS
+.cache/

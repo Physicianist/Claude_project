@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "_comment": "AICheck — конфигурация Claude Code: hooks, среда, разрешения. Скрипты в .claude/scripts/ — заглушки до соответствующих чанков, реальная логика добавляется по ходу разработки.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "_description": "После изменений в AI-сервисах запустить snapshot-тест анонимизатора (Chunk 7+)",
+        "matcher": "Edit|Write",
+        "filePattern": "apps/api/app/services/ai/**",
+        "command": "python3 .claude/scripts/check_anonymizer.py",
+        "timeout": 30000
+      },
+      {
+        "_description": "Авто-линт Python-кода после изменений (Chunk 1+)",
+        "matcher": "Edit|Write",
+        "filePattern": "apps/api/**/*.py",
+        "command": "cd apps/api && ruff check --fix",
+        "timeout": 30000
+      },
+      {
+        "_description": "Авто-линт TypeScript после изменений (Chunk 1+)",
+        "matcher": "Edit|Write",
+        "filePattern": "apps/web/**/*.{ts,tsx}",
+        "command": "cd apps/web && pnpm exec eslint --fix",
+        "timeout": 30000
+      }
+    ],
+    "Stop": [
+      {
+        "_description": "Обновить статус-таблицу при завершении сессии",
+        "command": "python3 .claude/scripts/update_status.py",
+        "timeout": 15000
+      }
+    ],
+    "PreToolUse": [
+      {
+        "_description": "Блокировка опасных Bash-команд (rm -rf /, force push в main и т.д.)",
+        "matcher": "Bash",
+        "command": "python3 .claude/scripts/safety_check.py",
+        "blocking": true,
+        "timeout": 5000
+      }
+    ]
+  },
+  "permissions": {
+    "_comment": "Список безопасных команд, не требующих подтверждения. Расширяется по мере разработки через scratch-prompts.",
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git fetch:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(pwd)",
+      "Bash(make dev:*)",
+      "Bash(make test:*)",
+      "Bash(make lint:*)",
+      "Bash(make migrate:*)",
+      "Bash(docker compose:*)",
+      "Bash(docker ps)",
+      "Bash(docker logs:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm dev:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pip install:*)",
+      "Bash(pytest:*)",
+      "Bash(ruff:*)",
+      "Bash(mypy:*)",
+      "Bash(alembic:*)",
+      "Bash(curl http://localhost:*)"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git config --global:*)"
+    ]
+  },
+  "env": {
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  }
+}
